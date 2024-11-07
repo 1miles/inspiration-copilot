@@ -7,7 +7,7 @@ with open('inspirations.json', 'r') as file:
     inspirations_data = json.load(file)
 
 # Extract the relevant data
-json_data = inspirations_data['inspirations']['inspiration']
+inspirations = inspirations_data['inspirations']['inspiration']
 
 # Streamlit app
 st.title("AI Agent Results Viewer")
@@ -15,23 +15,23 @@ st.title("AI Agent Results Viewer")
 # Sidebar to select JSON object
 selected_index = st.sidebar.selectbox(
     "Select an inspiration to view:", 
-    range(len(json_data['analysis_brief']['behavioral_patterns_and_friction'])), 
-    format_func=lambda x: json_data['analysis_brief']['behavioral_patterns_and_friction'][x]['behavior']
+    range(len(inspirations)), 
+    format_func=lambda x: inspirations[x]['title']
 )
 
 # Display the selected JSON object
-selected_data = json_data['analysis_brief']['behavioral_patterns_and_friction'][selected_index]
+selected_inspiration = inspirations[selected_index]
 
-st.header(json_data['title'])
+st.header(selected_inspiration['title'])
 
 # Option to view JSON data as raw or styled
 view_option = st.radio("View JSON as:", ("Pretty JSON", "Styled HTML"))
 
 if view_option == "Pretty JSON":
-    st.json(selected_data)
+    st.json(selected_inspiration)
 else:
     # Convert JSON to styled HTML using json2html
-    styled_html = json2html.convert(json=selected_data)
+    styled_html = json2html.convert(json=selected_inspiration)
     st.markdown(styled_html, unsafe_allow_html=True)
 
 # Additional styling
