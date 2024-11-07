@@ -10,7 +10,7 @@ with open('inspirations.json', 'r') as file:
 inspirations = inspirations_data['inspirations']['inspiration']
 
 # Streamlit app
-st.title("AI Agent Results Viewer")
+st.title("Design Co-pilot Results Viewer")
 
 # Sidebar to select JSON object
 selected_index = st.sidebar.selectbox(
@@ -29,9 +29,11 @@ def display_section(section_title, section_data):
     st.subheader(section_title)
     if isinstance(section_data, list):
         for item in section_data:
-            st.json(item)
+            styled_html = json2html.convert(json=item)
+            st.markdown(styled_html, unsafe_allow_html=True)
     else:
-        st.json(section_data)
+        styled_html = json2html.convert(json=section_data)
+        st.markdown(styled_html, unsafe_allow_html=True)
 
 # Iterate through each key in the selected inspiration
 for key, value in selected_inspiration.items():
