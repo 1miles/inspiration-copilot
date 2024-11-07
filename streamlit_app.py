@@ -27,7 +27,17 @@ st.header(selected_inspiration['title'])
 # Function to display each section
 def display_section(section_title, section_data):
     st.subheader(section_title)
-    if isinstance(section_data, list):
+    if isinstance(section_data, dict):
+        for sub_key, sub_value in section_data.items():
+            st.markdown(f"### {sub_key.replace('_', ' ').title()}")
+            if isinstance(sub_value, list):
+                for item in sub_value:
+                    styled_html = json2html.convert(json=item)
+                    st.markdown(styled_html, unsafe_allow_html=True)
+            else:
+                styled_html = json2html.convert(json=sub_value)
+                st.markdown(styled_html, unsafe_allow_html=True)
+    elif isinstance(section_data, list):
         for item in section_data:
             styled_html = json2html.convert(json=item)
             st.markdown(styled_html, unsafe_allow_html=True)
