@@ -2,40 +2,27 @@ import streamlit as st
 import json
 from json2html import json2html
 
-# Example JSON data (this would be replaced by your app's output)
-json_data = [
-    {
-        "title": "Shared Experience Savings for Social Connection",
-        "behavioral_patterns": [
-            {"behavior": "Desire for connection", "friction": "Trust issues"},
-            {"behavior": "Seeking savings", "friction": "Lack of tools"}
-        ],
-        "scenarios": [
-            {"scenario_title": "The Budget Dilemma", "description": "A group struggles to save together."},
-            {"scenario_title": "The Town Hall Dilemma", "description": "Residents discuss pooling funds for community benefit."}
-        ]
-    },
-    {
-        "title": "Empowering Civic Engagement through Accessible Savings",
-        "behavioral_patterns": [
-            {"behavior": "Interest in civic participation", "friction": "Complex bureaucracy"}
-        ],
-        "scenarios": [
-            {"scenario_title": "The Town Hall Dilemma", "description": "Residents discuss pooling funds for community benefit."}
-        ]
-    }
-]
+# Load JSON data from file
+with open('inspirations.json', 'r') as file:
+    inspirations_data = json.load(file)
+
+# Extract the relevant data
+json_data = inspirations_data['inspirations']['inspiration']
 
 # Streamlit app
 st.title("AI Agent Results Viewer")
 
 # Sidebar to select JSON object
-selected_index = st.sidebar.selectbox("Select an inspiration to view:", range(len(json_data)), format_func=lambda x: json_data[x]['title'])
+selected_index = st.sidebar.selectbox(
+    "Select an inspiration to view:", 
+    range(len(json_data['analysis_brief']['behavioral_patterns_and_friction'])), 
+    format_func=lambda x: json_data['analysis_brief']['behavioral_patterns_and_friction'][x]['behavior']
+)
 
 # Display the selected JSON object
-selected_data = json_data[selected_index]
+selected_data = json_data['analysis_brief']['behavioral_patterns_and_friction'][selected_index]
 
-st.header(selected_data['title'])
+st.header(json_data['title'])
 
 # Option to view JSON data as raw or styled
 view_option = st.radio("View JSON as:", ("Pretty JSON", "Styled HTML"))
