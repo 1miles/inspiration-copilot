@@ -24,15 +24,19 @@ selected_inspiration = inspirations[selected_index]
 
 st.header(selected_inspiration['title'])
 
-# Option to view JSON data as raw or styled
-view_option = st.radio("View JSON as:", ("Pretty JSON", "Styled HTML"))
+# Function to display each section
+def display_section(section_title, section_data):
+    st.subheader(section_title)
+    if isinstance(section_data, list):
+        for item in section_data:
+            st.json(item)
+    else:
+        st.json(section_data)
 
-if view_option == "Pretty JSON":
-    st.json(selected_inspiration)
-else:
-    # Convert JSON to styled HTML using json2html
-    styled_html = json2html.convert(json=selected_inspiration)
-    st.markdown(styled_html, unsafe_allow_html=True)
+# Iterate through each key in the selected inspiration
+for key, value in selected_inspiration.items():
+    if key != 'title':
+        display_section(key.replace('_', ' ').title(), value)
 
 # Additional styling
 st.markdown(
