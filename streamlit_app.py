@@ -6,49 +6,64 @@ from json2html import json2html
 with open('inspirations.json', 'r') as file:
     inspirations_data = json.load(file)
 
-# Extract the relevant data
-inspirations = inspirations_data['inspirations']['inspiration']
+# Extract the list of Inspirations
+inspirations_list = inspirations_data['inspirations']
 
 # Streamlit app
 st.title("Design Co-pilot Results Viewer")
 
-# Sidebar to select JSON object
-selected_index = st.sidebar.selectbox(
-    "Select an inspiration to view:", 
-    range(len(inspirations)), 
-    format_func=lambda x: inspirations[x]['title']
+# Create a list of inspiration titles or identifiers
+inspiration_titles = [f"Inspiration {i+1}" for i in range(len(inspirations_list))]
+
+# Sidebar to select an Inspiration to view
+selected_inspiration_index = st.sidebar.selectbox(
+    "Select an inspiration to view:",
+    range(len(inspiration_titles)),
+    format_func=lambda x: inspiration_titles[x]
 )
 
-# Display the selected JSON object
-selected_inspiration = inspirations[selected_index]
+# Get the selected Inspiration
+selected_inspiration = inspirations_list[selected_inspiration_index]
 
-st.header(selected_inspiration['title'])
+st.header(f"Inspiration {selected_inspiration_index + 1}")
 
-# Function to display each section
-def display_section(section_title, section_data):
-    st.subheader(section_title)
+# Get the list of sections in the selected Inspiration
+sections = list(selected_inspiration.keys())
+
+# Sidebar to select a section to view
+selected_section = st.sidebar.selectbox(
+    "Select a section to view:",
+    sections
+)
+
+# Display the selected section
+section_data = selected_inspiration[selected_section]
+
+st.subheader(selected_section.replace('_', ' ').title())
+
+# Function to display the content
+def display_section(section_data):
     if isinstance(section_data, dict):
-        for sub_key, sub_value in section_data.items():
-            st.markdown(f"### {sub_key.replace('_', ' ').title()}")
-            if isinstance(sub_value, list):
-                for item in sub_value:
-                    styled_html = json2html.convert(json=item)
-                    st.markdown(styled_html, unsafe_allow_html=True)
-            else:
-                styled_html = json2html.convert(json=sub_value)
+        for key, value in section_data.items():
+            st.markdown(f"### {key.replace('_', ' ').title()}")
+            if isinstance(value, (dict, list)):
+                styled_html = json2html.convert(json=value)
                 st.markdown(styled_html, unsafe_allow_html=True)
+            else:
+                st.write(value)
     elif isinstance(section_data, list):
-        for item in section_data:
-            styled_html = json2html.convert(json=item)
-            st.markdown(styled_html, unsafe_allow_html=True)
+        for index, item in enumerate(section_data):
+            st.markdown(f"### Item {index + 1}")
+            if isinstance(item, (dict, list)):
+                styled_html = json2html.convert(json=item)
+                st.markdown(styled_html, unsafe_allow_html=True)
+            else:
+                st.write(item)
     else:
-        styled_html = json2html.convert(json=section_data)
-        st.markdown(styled_html, unsafe_allow_html=True)
+        st.write(section_data)
 
-# Iterate through each key in the selected inspiration
-for key, value in selected_inspiration.items():
-    if key != 'title':
-        display_section(key.replace('_', ' ').title(), value)
+# Display the content of the selected section
+display_section(section_data)
 
 # Additional styling
 st.markdown(
@@ -64,4 +79,4 @@ st.markdown(
 )
 
 # Footer message
-st.write("Select different inspirations from the sidebar to explore their details.")
+st.write("Select different inspirations and sections from the sidebar to explore their details.")
