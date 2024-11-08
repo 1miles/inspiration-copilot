@@ -7,7 +7,7 @@ with open('inspirations.json', 'r') as file:
     inspirations_data = json.load(file)
 
 # Extract the list of Inspirations
-inspirations_list = inspirations_data['inspirations']
+inspirations_list = inspirations_data['Inspirations']
 
 # Streamlit app
 st.title("Design Co-pilot Results Viewer")
