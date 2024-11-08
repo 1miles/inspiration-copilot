@@ -7,13 +7,21 @@ with open('inspirations.json', 'r') as file:
     inspirations_data = json.load(file)
 
 # Extract the list of Inspirations
-inspirations_list = inspirations_data['Inspirations']
+inspirations_wrapped_list = inspirations_data['Inspirations']
+
+# Unwrap the inspirations by accessing the 'Inspiration' key inside each item
+inspirations_list = [item['Inspiration'] for item in inspirations_wrapped_list]
 
 # Streamlit app
 st.title("Design Co-pilot Results Viewer")
 
-# Create a list of inspiration titles or identifiers
-inspiration_titles = [f"Inspiration {i+1}" for i in range(len(inspirations_list))]
+# Create a list of inspiration titles from the 'inspiration_title' in 'behavior_analysis_brief'
+inspiration_titles = []
+for inspiration in inspirations_list:
+    # Navigate to the inspiration_title
+    behavior_analysis_brief = inspiration.get('behavior_analysis_brief', {})
+    inspiration_title = behavior_analysis_brief.get('inspiration_title', 'Untitled Inspiration')
+    inspiration_titles.append(inspiration_title)
 
 # Sidebar to select an Inspiration to view
 selected_inspiration_index = st.sidebar.selectbox(
@@ -25,7 +33,8 @@ selected_inspiration_index = st.sidebar.selectbox(
 # Get the selected Inspiration
 selected_inspiration = inspirations_list[selected_inspiration_index]
 
-st.header(f"Inspiration {selected_inspiration_index + 1}")
+# Display the selected inspiration title as the header
+st.header(inspiration_titles[selected_inspiration_index])
 
 # Get the list of sections in the selected Inspiration
 sections = list(selected_inspiration.keys())
